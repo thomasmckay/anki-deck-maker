@@ -2,20 +2,20 @@ import genanki
 import sys
 import random
 
-root_path = '/Users/yonbui/Desktop/french_vocab/'
+root_path = './'
 
 basic = genanki.Model(
-    1607392319,
+    1698742122183,
     'Simple Model',
     fields=[
-        {'name': 'French'},
-        {'name': 'English'},
+        {'name': 'Question'},
+        {'name': 'Answer'},
     ],
     templates=[
         {
             'name': 'Card 1',
-            'qfmt': '{{French}}',
-            'afmt': '{{FrontSide}}<hr id="answer">{{English}}',
+            'qfmt': '{{Question}}',
+            'afmt': '{{FrontSide}}<hr id="answer">{{Answer}}',
         }],
     css=
     """
@@ -30,7 +30,7 @@ basic = genanki.Model(
 )
 
 def read_vocab(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf8') as file:
         file_content = file.read()
     return file_content
 
@@ -38,18 +38,24 @@ def read_vocab(file_path):
 def gen_notes(file_path):
     file_content = read_vocab(file_path)
     notes = []
+    tag = ""
     for line in file_content.split('\n'):
         front = ''
         back = ''
         if line.strip():
-            parts = line.split(' - ', 1)
-            # print(parts)
-            front = parts[0]
-            back = parts[1]
-            new_note = genanki.Note(
-                model=basic,
-                fields=[front, back])
-            notes.append(new_note)
+            parts = line.split(' // ')
+
+            if len(parts) == 1:
+                tag = parts[0]
+            elif len(parts) == 2:
+                front = parts[0]
+                back = parts[1]
+                new_note = genanki.Note(
+                    model=basic,
+                    fields=[front, back],
+                    tags=[tag]
+                    )
+                notes.append(new_note)
     return notes
 
 
